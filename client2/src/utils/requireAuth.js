@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-export default function(ComposedComponent) {
+export default function (ComposedComponent) {
   class Authenticate extends Component {
     componentWillMount() {
       if (!this.props.isAuthenticated) {
@@ -21,7 +21,7 @@ export default function(ComposedComponent) {
   }
   function mapStateToProps(state) {
     return {
-      isAuthenticated: state.auth.isAuthenticated
+      isAuthenticated: state.auth.isAuthenticated,
     };
   }
 

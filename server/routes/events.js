@@ -4,12 +4,12 @@ const { Setting } = require("../models/settings");
 
 const router = require("express").Router();
 
-// router.get("/", (req, res) => {
-//   Event.find({}, (err, events) => {
-//     if (err) return res.status(400).send(err);
-//     return res.status(200).send(events);
-//   });
-// });
+router.get("/", (req, res) => {
+  Event.find({}, (err, events) => {
+    if (err) return res.status(400).send(err);
+    return res.status(200).send(events);
+  });
+});
 // router.get("/byCity", (req, res) => {
 //   console.log(req.query.city);
 //   Event.find({ city: req.query.city }, (err, events) => {
@@ -17,32 +17,39 @@ const router = require("express").Router();
 //     return res.status(200).send(events);
 //   });
 // });
-router.get("/", (req, res) => {
-  const srchStr = req.query.srchStr;
-  const category = req.query.category;
+router.post("/byCity", authenticate, (req, res) => {
+  console.log("post/events/byCity");
+  console.log(req.body);
+  const city = req.currentUser.defaultCity;
+  const efilters = {};
+  let srchStr, category;
+  if (req.body.category) category = req.body.category;
+  if (req.body.srchStr) srchStr = req.body.srchStr;
 
-  Setting.findOne({ uid: req.query.uid }, (err, setting) => {
-    const city = setting.filterCity;
-    console.log(city, srchStr);
-    if (srchStr) {
-      const str = `/${srchStr}/`;
-      Event.find({ city: city, name: { $regex: str } }, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
-    } else if (category) {
-      Event.find({ city: city, category: category }, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
-    } else {
-      Event.find({ city: city }, (err, events) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send(events);
-      });
-    }
-  });
+  // Setting.findOne({ uid: req.query.uid }, (err, setting) => {
+
+  //  const city  = req.currentUser.defaultCity;
+  // const state  = req.currentUser.defaulState;
+
+  if (srchStr) {
+    const str = `/${srchStr}/`;
+    Event.find({ city: city, name: { $regex: str } }, (err, events) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).send(events);
+    });
+  } else if (category) {
+    Event.find({ city: city, category: category }, (err, events) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).send(events);
+    });
+  } else {
+    Event.find({ city: city }, (err, events) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).send(events);
+    });
+  }
 });
+//});
 router.get("/id", (req, res) => {
   let id = req.query.id;
 
@@ -58,7 +65,7 @@ function validate(data) {
   const isValid = Object.keys(errors).length === 0;
   return { errors, isValid };
 }
-router.post("/", authenticate, (req, res) => {
+router.post("/", (req, res) => {
   console.log(req.body);
   const { errors, isValid } = validate(req.body);
 
@@ -68,7 +75,7 @@ router.post("/", authenticate, (req, res) => {
   const event = new Event(req.body);
   console.log(event);
   //res.status(201).json({ success: true });
-  Event.findOne({ name: req.body.name }, function(err, existingUser) {
+  Event.findOne({ name: req.body.name }, function (err, existingUser) {
     if (err) {
       return res.status(401).json({ errors: { form: err } });
     }
@@ -76,7 +83,7 @@ router.post("/", authenticate, (req, res) => {
       return res.status(422).json({ errors: { form: "Event already exists" } });
     }
 
-    event.save(function(err) {
+    event.save(function (err) {
       if (err) {
         if (err) res.status(423).json({ errors: { form: err } });
       }
@@ -96,7 +103,7 @@ router.post("/update", authenticate, (req, res) => {
   // }
 
   //res.status(201).json({ success: true });
-  Event.findOne({ name: req.body.name }, function(err, existingUser) {
+  Event.findOne({ name: req.body.name }, function (err, existingUser) {
     if (err) {
       console.log("error", err);
       return res.status(421).json({ success: false, err });

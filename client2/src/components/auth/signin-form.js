@@ -1,9 +1,9 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import TextFieldGroup from "./common/TextFieldGroup";
+import TextFieldGroup from "../common/TextFieldGroup";
 //import validateInput from "../../server/shared/validations/login";
 import { connect } from "react-redux";
-import { login } from "../actions/authActions";
+import { login } from "../../actions/authActions";
 
 class SigninForm extends React.Component {
   constructor(props) {
@@ -13,14 +13,15 @@ class SigninForm extends React.Component {
       password: "",
       errors: {},
       isLoading: false,
-      invalid: false
+      invalid: false,
     };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
   }
 
-  isValidEntries() {
+  componentDidMount() {}
+  isValid() {
     let errors = {};
     const { identifier, password } = this.state;
     if (!identifier) {
@@ -41,13 +42,11 @@ class SigninForm extends React.Component {
 
   onSubmit(e) {
     e.preventDefault();
-
-    if (this.isValidEntries()) {
+    if (this.isValid()) {
       this.setState({ errors: {}, isLoading: true });
       this.props.login(this.state).then(
-        res => this.props.history.push("/events"),
-        err =>
-          this.setState({ errors: err.response.data.errors, isLoading: false })
+        (res) => this.props.history.push("/events"),
+        (err) => console.log("Inalid username and/or password", err)
       );
     }
   }
@@ -61,9 +60,11 @@ class SigninForm extends React.Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <h1>Login</h1>
+        <h1>Signin</h1>
 
-        {errors.form && <div className="alert alert-danger">{errors.form}</div>}
+        {this.props.error ? (
+          <div className="alert alert-danger">{this.props.error}</div>
+        ) : null}
 
         <TextFieldGroup
           field="identifier"
@@ -95,5 +96,7 @@ class SigninForm extends React.Component {
 // LoginForm.propTypes = {
 //   login: React.PropTypes.func.isRequired
 // };
-
-export default connect(null, { login })(withRouter(SigninForm));
+function mapStateToProps(state) {
+  return { error: state.auth.error };
+}
+export default connect(mapStateToProps, { login })(withRouter(SigninForm));

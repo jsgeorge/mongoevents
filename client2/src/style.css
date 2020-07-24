@@ -1,6 +1,28 @@
 .container {
-  padding-top: 70px;
   clear: left;
+}
+#margin-top {
+  margin-top: 70px;
+}
+.navbar .navbar-expand-lg {
+  background: red;
+  color: #fff;
+}
+.navbar-brand {
+  float: left;
+  width: 200px;
+}
+.navbar-right {
+  width: 300px;
+}
+.navbar-right .nav-item {
+  float: left;
+
+  padding: 0;
+}
+.navbar-right .nav-item .nav-link {
+  margin: 0 20px;
+  padding: 0;
 }
 .page-top-cmds {
   padding: 10px 0;
@@ -8,12 +30,24 @@
 .has-error {
   color: red;
 }
+.has-error input {
+  border: 1px solid red;
+}
 .card {
   border: none;
   border-bottom: 1px solid #ccc;
 }
 .jumbotron {
-  background: rgb(9, 69, 148);
+  background: rgb(211, 217, 224);
+}
+.addLink {
+  background: transparent;
+  border-radius: 200px;
+  border: 1px solid #777;
+  color: #777;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
 }
 a,
 a:hover {
@@ -23,19 +57,24 @@ a:hover {
 .ctgryBtns {
   padding: 12px 0;
 }
-.ctgryBtn {
-  margin: 2px;
-  border: "1px solid #111";
-  background: rgb(255, 254, 254);
+.ctgryBtn,
+.navBtn {
+  margin: 0px;
+  border: none;
+  background: transparent;
   padding: 2px 4px;
   font-size: 16px;
+  color: gray;
+}
+.navBtn {
+  padding: 0;
 }
 .ctryFont {
   font-size: 20px;
 }
 .filterCmds {
-  border-top: "1px solid #ccc";
-  border-bottom: "1px solid #ccc";
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 }
 
 @media (max-width: 500px) {

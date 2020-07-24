@@ -20,19 +20,37 @@ router.post("/", (req, res) => {
   const { identifier, password } = req.body;
   User.findOne({ email: identifier }, (err, user) => {
     if (!user)
-      return res.status(401).json({
-        loginSuccess: false,
-        errors: { form: "Login failed, email not found" }
+      return res.status(401).send({
+        error: "Login failed, email not found",
       });
     user.comparePassword(password, (err, isMatch) => {
       if (!isMatch)
-        return res.status(401).json({
-          loginSuccess: false,
-          errors: { form: "Login failed, Wrong password" }
+        return res.status(401).send({
+          error: "Login failed, Wrong password",
         });
 
-      res.status(200).json({
-        token: tokenForUser(user)
+      // res.status(200).json({
+      //   token: tokenForUser(user)
+      // });
+      user.generateToken((err, user) => {
+        if (err) {
+          return res.status(401).send({ error: "unonwn error" });
+        }
+        // res.cookie("w_auth", user.token).status(200).json({
+        //   loginSuccess: true,
+        // });
+        let currentUser = {
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          timezone: user.timezone,
+          defaultCity: user.defaultCity,
+          defaultState: user.defaultState,
+        };
+
+        res
+          .status(200)
+          .json({ loginSuccess: true, user: currentUser, token: user.token });
       });
     });
   });
